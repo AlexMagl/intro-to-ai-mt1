@@ -200,24 +200,22 @@
             return "N/A";
         }
 
-        window.onload = function() {
-            const tbody = document.getElementById("courseTableBody");
+        const tbody = document.getElementById("courseTableBody");
+        
+        myCourses.forEach(course => {
+            const tr = document.createElement("tr");
             
-            myCourses.forEach(course => {
-                const tr = document.createElement("tr");
-                
-                const tdName = document.createElement("td");
-                tdName.textContent = course.name;
-                
-                const tdPassed = document.createElement("td");
-                tdPassed.textContent = course.passed ? "Yes" : "No";
-                tdPassed.className = course.passed ? "passed-yes" : "passed-no";
-                
-                tr.appendChild(tdName);
-                tr.appendChild(tdPassed);
-                tbody.appendChild(tr);
-            });
-        };
+            const tdName = document.createElement("td");
+            tdName.textContent = course.name;
+            
+            const tdPassed = document.createElement("td");
+            tdPassed.textContent = course.passed ? "Yes" : "No";
+            tdPassed.className = course.passed ? "passed-yes" : "passed-no";
+            
+            tr.appendChild(tdName);
+            tr.appendChild(tdPassed);
+            tbody.appendChild(tr);
+        });
 
         function generateEquivalency() {
             const targetProgram = document.getElementById("targetProgram").value;
