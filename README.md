@@ -45,6 +45,7 @@ if (program === "Computer Engineering") {
     return "N/A";
 }
 // ... additional logic for Electrical & Electronics Engineering
+```
 
 ## 3. Improvement Plan: Automatic Syllabus Comparison
 Currently, the transfer logic relies on manually defined, hardcoded rules. The ultimate future improvement for this application is to implement an **Automatic Syllabus Comparison Algorithm** driven by Artificial Intelligence. 
