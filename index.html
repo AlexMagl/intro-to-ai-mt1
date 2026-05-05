@@ -129,110 +129,76 @@
 
     <script>
         // Database of current courses
-        // Includes regular Argus courses + 5 additional chosen courses at the bottom
         const myCourses = [
-            // Argus Courses (Mixed pass/fail/in-progress)
-            { name: "Introduction to Artificial Intelligence", passed: false },
-            { name: "Introduction to Programming", passed: true },
+            // Argus Courses 
+            { name: "Academic Techniques", passed: true },
+            { name: "Basics of Physics I (including Lab)", passed: true },
+            { name: "Basics of Physics II", passed: true },
             { name: "Calculus I", passed: true },
-            { name: "Operating Systems", passed: false },
-            { name: "Database Management", passed: false },
-            { name: "Physics I", passed: true },
-            // 5 Additional Courses (Must always be "Yes" / true)
-            { name: "Discrete Mathematics", passed: true },
-            { name: "Data Structures", passed: true },
-            { name: "Algorithms", passed: true },
-            { name: "Linear Algebra", passed: true },
-            { name: "Software Engineering", passed: true }
+            { name: "Calculus II", passed: true },
+            { name: "Calculus III", passed: true },
+            { name: "English Language Course C1-1", passed: true },
+            { name: "English Language Course C1-2", passed: true },
+            { name: "Introduction to Linear Algebra", passed: true },
+            { name: "Introduction to Modern Thought I", passed: true },
+            { name: "AWS Cloud Practitioner", passed: true },
+            { name: "Algorithms and Data Structures", passed: true },
+            { name: "Computational and Statistical Methods", passed: true },
+            { name: "Computer Organization", passed: true },
+            { name: "Computer and Data Networks", passed: true },
+            { name: "Cyberlaw and Ethics", passed: true },
+            { name: "Databases and Information Systems", passed: false }, // Not passed
+            { name: "Design Patterns", passed: false }, // Not passed
+            { name: "Distributed and Parallel Computing", passed: false }, // Not passed
+            { name: "Drones", passed: true },
+            { name: "Elements of Computational Complexity", passed: true },
+            { name: "Introduction to Artificial Intelligence", passed: false }, // Not passed (Midterm!)
+            { name: "Introduction to Cyber Security", passed: true },
+            { name: "Introduction to Operating Systems", passed: true },
+            { name: "Introduction to Programming", passed: true },
+            { name: "Introduction to Machine Learning", passed: false }, // Not passed
+            { name: "Mathematical Foundation of Computing", passed: true },
+            { name: "Object Oriented Programming", passed: true },
+            { name: "Principles of Numerical Methods", passed: true },
+            { name: "Programming Languages", passed: true },
+            
+            // 5 Additional Courses (At the bottom, must always be "Yes" / true)
+            { name: "DevOps Technologies", passed: true },
+            { name: "Functional Programming", passed: true },
+            { name: "IT Project Management", passed: true },
+            { name: "Web Programming", passed: true },
+            { name: "Computer Graphics", passed: true }
         ];
 
-        // Equivalency Database (Reasonable mappings)
-        const equivalencyMap = {
-            "Computer Engineering": {
-                "Introduction to Programming": "Intro to C++",
-                "Calculus I": "Engineering Math I",
-                "Physics I": "Engineering Physics I",
-                "Discrete Mathematics": "Discrete Structures",
-                "Data Structures": "Data Structures & Algorithms",
-                "Algorithms": "N/A", 
-                "Linear Algebra": "Engineering Math II",
-                "Software Engineering": "Software Design"
-            },
-            "Civil Engineering": {
-                "Introduction to Programming": "N/A",
-                "Calculus I": "Engineering Math I",
-                "Physics I": "Mechanics",
-                "Discrete Mathematics": "N/A",
-                "Data Structures": "N/A",
-                "Algorithms": "N/A",
-                "Linear Algebra": "Engineering Math II",
-                "Software Engineering": "N/A"
-            },
-            "Electrical and Electronics Engineering": {
-                "Introduction to Programming": "Introduction to Computing",
-                "Calculus I": "Engineering Math I",
-                "Physics I": "Electromagnetism Foundations",
-                "Discrete Mathematics": "N/A",
-                "Data Structures": "N/A",
-                "Algorithms": "N/A",
-                "Linear Algebra": "Engineering Math II",
-                "Software Engineering": "N/A"
+        // Custom Logic to determine equivalency reasonably
+        function getEquivalentCourse(program, courseName) {
+            // General Ed & Math/Physics generally transfer everywhere
+            const generalAndMath = [
+                "Academic Techniques", "Calculus I", "Calculus II", "Calculus III", 
+                "English Language Course C1-1", "English Language Course C1-2", 
+                "Introduction to Linear Algebra", "Introduction to Modern Thought I",
+                "Basics of Physics I (including Lab)", "Basics of Physics II",
+                "Principles of Numerical Methods"
+            ];
+            
+            if (generalAndMath.includes(courseName)) {
+                return courseName + " (Transfer)";
             }
-        };
 
-        // Requirement 1: Load the table automatically
-        window.onload = function() {
-            const tbody = document.getElementById("courseTableBody");
-            
-            myCourses.forEach(course => {
-                const tr = document.createElement("tr");
-                
-                const tdName = document.createElement("td");
-                tdName.textContent = course.name;
-                
-                const tdPassed = document.createElement("td");
-                tdPassed.textContent = course.passed ? "Yes" : "No";
-                tdPassed.className = course.passed ? "passed-yes" : "passed-no";
-                
-                tr.appendChild(tdName);
-                tr.appendChild(tdPassed);
-                tbody.appendChild(tr);
-            });
-        };
-
-        // Requirement 4: Transfer Button Logic
-        function generateEquivalency() {
-            const targetProgram = document.getElementById("targetProgram").value;
-            const tbody = document.getElementById("equivalencyTableBody");
-            const section = document.getElementById("equivalencySection");
-            const label = document.getElementById("targetProgramLabel");
-            
-            // Clear previous results
-            tbody.innerHTML = "";
-            label.innerHTML = `Showing transfer equivalencies for: <strong>${targetProgram}</strong>`;
-            
-            // Filter ONLY passed courses
-            const passedCourses = myCourses.filter(course => course.passed === true);
-            
-            passedCourses.forEach(course => {
-                const tr = document.createElement("tr");
-                
-                const tdOldCourse = document.createElement("td");
-                tdOldCourse.textContent = course.name;
-                
-                const tdNewCourse = document.createElement("td");
-                // Find equivalent, default to N/A if missing
-                const equivalent = equivalencyMap[targetProgram][course.name];
-                tdNewCourse.textContent = equivalent ? equivalent : "N/A";
-                
-                tr.appendChild(tdOldCourse);
-                tr.appendChild(tdNewCourse);
-                tbody.appendChild(tr);
-            });
-            
-            // Show the table
-            section.style.display = "block";
-        }
-    </script>
-</body>
-</html>
+            if (program === "Computer Engineering") {
+                // Almost all CS courses transfer to CompEng
+                return courseName; 
+            } 
+            else if (program === "Civil Engineering") {
+                // Only very basic computing and management transfers to Civil
+                if (courseName === "Introduction to Programming") return "Computing for Engineers";
+                if (courseName === "IT Project Management") return "Engineering Project Management";
+                return "N/A";
+            } 
+            else if (program === "Electrical and Electronics Engineering") {
+                // Hardware, management, and basic programming transfer
+                const eeTransfers = [
+                    "Introduction to Programming", "Computer Organization", 
+                    "Computer and Data Networks", "Drones", "Introduction to Operating Systems"
+                ];
+                if (eeTransfers.
