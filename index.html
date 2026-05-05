@@ -75,7 +75,7 @@
             background-color: #2980b9;
         }
         #equivalencySection {
-            display: none; /* Hidden until transfer is clicked */
+            display: none;
         }
     </style>
 </head>
@@ -96,7 +96,7 @@
             </tr>
         </thead>
         <tbody id="courseTableBody">
-            </tbody>
+        </tbody>
     </table>
 
     <div class="transfer-controls">
@@ -123,14 +123,12 @@
                 </tr>
             </thead>
             <tbody id="equivalencyTableBody">
-                </tbody>
+            </tbody>
         </table>
     </div>
 
     <script>
-        // Database of current courses
         const myCourses = [
-            // Argus Courses 
             { name: "Academic Techniques", passed: true },
             { name: "Basics of Physics I (including Lab)", passed: true },
             { name: "Basics of Physics II", passed: true },
@@ -147,22 +145,20 @@
             { name: "Computer Organization", passed: true },
             { name: "Computer and Data Networks", passed: true },
             { name: "Cyberlaw and Ethics", passed: true },
-            { name: "Databases and Information Systems", passed: false }, // Not passed
-            { name: "Design Patterns", passed: false }, // Not passed
-            { name: "Distributed and Parallel Computing", passed: false }, // Not passed
+            { name: "Databases and Information Systems", passed: false }, 
+            { name: "Design Patterns", passed: false }, 
+            { name: "Distributed and Parallel Computing", passed: false }, 
             { name: "Drones", passed: true },
             { name: "Elements of Computational Complexity", passed: true },
-            { name: "Introduction to Artificial Intelligence", passed: false }, // Not passed (Midterm!)
+            { name: "Introduction to Artificial Intelligence", passed: false }, 
             { name: "Introduction to Cyber Security", passed: true },
             { name: "Introduction to Operating Systems", passed: true },
             { name: "Introduction to Programming", passed: true },
-            { name: "Introduction to Machine Learning", passed: false }, // Not passed
+            { name: "Introduction to Machine Learning", passed: false }, 
             { name: "Mathematical Foundation of Computing", passed: true },
             { name: "Object Oriented Programming", passed: true },
             { name: "Principles of Numerical Methods", passed: true },
             { name: "Programming Languages", passed: true },
-            
-            // 5 Additional Courses (At the bottom, must always be "Yes" / true)
             { name: "DevOps Technologies", passed: true },
             { name: "Functional Programming", passed: true },
             { name: "IT Project Management", passed: true },
@@ -170,9 +166,7 @@
             { name: "Computer Graphics", passed: true }
         ];
 
-        // Custom Logic to determine equivalency reasonably
         function getEquivalentCourse(program, courseName) {
-            // General Ed & Math/Physics generally transfer everywhere
             const generalAndMath = [
                 "Academic Techniques", "Calculus I", "Calculus II", "Calculus III", 
                 "English Language Course C1-1", "English Language Course C1-2", 
@@ -186,19 +180,72 @@
             }
 
             if (program === "Computer Engineering") {
-                // Almost all CS courses transfer to CompEng
                 return courseName; 
             } 
             else if (program === "Civil Engineering") {
-                // Only very basic computing and management transfers to Civil
                 if (courseName === "Introduction to Programming") return "Computing for Engineers";
                 if (courseName === "IT Project Management") return "Engineering Project Management";
                 return "N/A";
             } 
             else if (program === "Electrical and Electronics Engineering") {
-                // Hardware, management, and basic programming transfer
                 const eeTransfers = [
                     "Introduction to Programming", "Computer Organization", 
                     "Computer and Data Networks", "Drones", "Introduction to Operating Systems"
                 ];
-                if (eeTransfers.
+                if (eeTransfers.includes(courseName)) return courseName + " (EE)";
+                if (courseName === "IT Project Management") return "Engineering Management";
+                return "N/A";
+            }
+
+            return "N/A";
+        }
+
+        window.onload = function() {
+            const tbody = document.getElementById("courseTableBody");
+            
+            myCourses.forEach(course => {
+                const tr = document.createElement("tr");
+                
+                const tdName = document.createElement("td");
+                tdName.textContent = course.name;
+                
+                const tdPassed = document.createElement("td");
+                tdPassed.textContent = course.passed ? "Yes" : "No";
+                tdPassed.className = course.passed ? "passed-yes" : "passed-no";
+                
+                tr.appendChild(tdName);
+                tr.appendChild(tdPassed);
+                tbody.appendChild(tr);
+            });
+        };
+
+        function generateEquivalency() {
+            const targetProgram = document.getElementById("targetProgram").value;
+            const tbody = document.getElementById("equivalencyTableBody");
+            const section = document.getElementById("equivalencySection");
+            const label = document.getElementById("targetProgramLabel");
+            
+            tbody.innerHTML = "";
+            label.innerHTML = `Showing transfer equivalencies for: <strong>${targetProgram}</strong>`;
+            
+            const passedCourses = myCourses.filter(course => course.passed === true);
+            
+            passedCourses.forEach(course => {
+                const tr = document.createElement("tr");
+                
+                const tdOldCourse = document.createElement("td");
+                tdOldCourse.textContent = course.name;
+                
+                const tdNewCourse = document.createElement("td");
+                tdNewCourse.textContent = getEquivalentCourse(targetProgram, course.name);
+                
+                tr.appendChild(tdOldCourse);
+                tr.appendChild(tdNewCourse);
+                tbody.appendChild(tr);
+            });
+            
+            section.style.display = "block";
+        }
+    </script>
+</body>
+</html>
