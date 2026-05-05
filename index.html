@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Transfer Planner</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+        }
+        .program-info {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #3498db;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #2c3e50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .passed-yes {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .passed-no {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .transfer-controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        select, button {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #equivalencySection {
+            display: none; /* Hidden until transfer is clicked */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Academic Transfer Planner</h1>
+
+    <div class="program-info">
+        <h3>Current Academic Program: Computer Science</h3>
+    </div>
+
+    <h2>My Course History</h2>
+    <table id="courseTable">
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Passed</th>
+            </tr>
+        </thead>
+        <tbody id="courseTableBody">
+            </tbody>
+    </table>
+
+    <div class="transfer-controls">
+        <h2>Plan Transfer</h2>
+        <label for="targetProgram">Select Target Program: </label>
+        
+        <select id="targetProgram">
+            <option value="Computer Engineering">Computer Engineering</option>
+            <option value="Civil Engineering">Civil Engineering</option>
+            <option value="Electrical and Electronics Engineering">Electrical and Electronics Engineering</option>
+        </select>
+        
+        <button onclick="generateEquivalency()">Transfer</button>
+    </div>
+
+    <div id="equivalencySection">
+        <h2>Transfer Equivalency Results</h2>
+        <p id="targetProgramLabel"></p>
+        <table id="equivalencyTable">
+            <thead>
+                <tr>
+                    <th>Your Program's Course (Completed)</th>
+                    <th>Equivalent Course in New Program</th>
+                </tr>
+            </thead>
+            <tbody id="equivalencyTableBody">
+                </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Database of current courses
+        // Includes regular Argus courses + 5 additional chosen courses at the bottom
+        const myCourses = [
+            // Argus Courses (Mixed pass/fail/in-progress)
+            { name: "Introduction to Artificial Intelligence", passed: false },
+            { name: "Introduction to Programming", passed: true },
+            { name: "Calculus I", passed: true },
+            { name: "Operating Systems", passed: false },
+            { name: "Database Management", passed: false },
+            { name: "Physics I", passed: true },
+            // 5 Additional Courses (Must always be "Yes" / true)
+            { name: "Discrete Mathematics", passed: true },
+            { name: "Data Structures", passed: true },
+            { name: "Algorithms", passed: true },
+            { name: "Linear Algebra", passed: true },
+            { name: "Software Engineering", passed: true }
+        ];
+
+        // Equivalency Database (Reasonable mappings)
+        const equivalencyMap = {
+            "Computer Engineering": {
+                "Introduction to Programming": "Intro to C++",
+                "Calculus I": "Engineering Math I",
+                "Physics I": "Engineering Physics I",
+                "Discrete Mathematics": "Discrete Structures",
+                "Data Structures": "Data Structures & Algorithms",
+                "Algorithms": "N/A", 
+                "Linear Algebra": "Engineering Math II",
+                "Software Engineering": "Software Design"
+            },
+            "Civil Engineering": {
+                "Introduction to Programming": "N/A",
+                "Calculus I": "Engineering Math I",
+                "Physics I": "Mechanics",
+                "Discrete Mathematics": "N/A",
+                "Data Structures": "N/A",
+                "Algorithms": "N/A",
+                "Linear Algebra": "Engineering Math II",
+                "Software Engineering": "N/A"
+            },
+            "Electrical and Electronics Engineering": {
+                "Introduction to Programming": "Introduction to Computing",
+                "Calculus I": "Engineering Math I",
+                "Physics I": "Electromagnetism Foundations",
+                "Discrete Mathematics": "N/A",
+                "Data Structures": "N/A",
+                "Algorithms": "N/A",
+                "Linear Algebra": "Engineering Math II",
+                "Software Engineering": "N/A"
+            }
+        };
+
+        // Requirement 1: Load the table automatically
+        window.onload = function() {
+            const tbody = document.getElementById("courseTableBody");
+            
+            myCourses.forEach(course => {
+                const tr = document.createElement("tr");
+                
+                const tdName = document.createElement("td");
+                tdName.textContent = course.name;
+                
+                const tdPassed = document.createElement("td");
+                tdPassed.textContent = course.passed ? "Yes" : "No";
+                tdPassed.className = course.passed ? "passed-yes" : "passed-no";
+                
+                tr.appendChild(tdName);
+                tr.appendChild(tdPassed);
+                tbody.appendChild(tr);
+            });
+        };
+
+        // Requirement 4: Transfer Button Logic
+        function generateEquivalency() {
+            const targetProgram = document.getElementById("targetProgram").value;
+            const tbody = document.getElementById("equivalencyTableBody");
+            const section = document.getElementById("equivalencySection");
+            const label = document.getElementById("targetProgramLabel");
+            
+            // Clear previous results
+            tbody.innerHTML = "";
+            label.innerHTML = `Showing transfer equivalencies for: <strong>${targetProgram}</strong>`;
+            
+            // Filter ONLY passed courses
+            const passedCourses = myCourses.filter(course => course.passed === true);
+            
+            passedCourses.forEach(course => {
+                const tr = document.createElement("tr");
+                
+                const tdOldCourse = document.createElement("td");
+                tdOldCourse.textContent = course.name;
+                
+                const tdNewCourse = document.createElement("td");
+                // Find equivalent, default to N/A if missing
+                const equivalent = equivalencyMap[targetProgram][course.name];
+                tdNewCourse.textContent = equivalent ? equivalent : "N/A";
+                
+                tr.appendChild(tdOldCourse);
+                tr.appendChild(tdNewCourse);
+                tbody.appendChild(tr);
+            });
+            
+            // Show the table
+            section.style.display = "block";
+        }
+    </script>
+</body>
+</html>
