@@ -45,3 +45,32 @@ if (program === "Computer Engineering") {
     return "N/A";
 }
 // ... additional logic for Electrical & Electronics Engineering
+
+## 3. Improvement Plan: Automatic Syllabus Comparison
+Currently, the transfer logic relies on manually defined, hardcoded rules. The ultimate future improvement for this application is to implement an **Automatic Syllabus Comparison Algorithm** driven by Artificial Intelligence. 
+
+Instead of relying solely on course titles, the system will use AI to read, understand, and compare the actual contents of the courses. 
+
+### AI Comparison Algorithm Steps
+
+1. **Data Ingestion (Document Parsing):**
+   * The system will accept syllabus document uploads (PDF or DOCX) or fetch them directly from the university's database for both the student's current program and the target program.
+   * Text extraction tools will parse the documents to isolate the *Learning Outcomes*, *Weekly Topics*, *Credit Hours*, and *Assessment Methods*.
+
+2. **Semantic Embedding Generation:**
+   * An AI embedding model (e.g., OpenAI's text embeddings) will convert the extracted syllabus text into high-dimensional vector representations. 
+   * This allows the computer to understand the semantic "meaning" of the course content rather than just checking for matching keywords.
+
+3. **AI Similarity Scoring:**
+   * The algorithm will calculate the **Cosine Similarity** between the vector of the completed course and the vectors of all courses in the target program.
+   * An LLM (Large Language Model) will be prompted to do a secondary qualitative check on highly similar pairs, asking it: *"Does Source Course A cover at least 80% of the learning objectives of Target Course B?"*
+
+4. **Equivalency Thresholding:**
+   * **Score > 85%:** Automatic Equivalency Match (Approved).
+   * **Score 65% - 84%:** Flagged for Human Review (Sent to the Dean/Advisor for final approval).
+   * **Score < 65%:** No Match (Outputs "N/A").
+
+5. **Dynamic Table Generation:**
+   * The application frontend will consume the resulting JSON output from the AI and dynamically build the equivalency table, providing exact percentage matches and AI-generated justifications for *why* a course was deemed equivalent. 
+
+By utilizing AI, universities can instantly update transfer pathways every semester without manually rewriting equivalency databases, saving administrative labor while ensuring maximum fairness for transferring students.
