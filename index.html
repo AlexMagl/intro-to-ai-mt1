@@ -167,6 +167,7 @@
         ];
 
         function getEquivalentCourse(program, courseName) {
+            // General Ed & Math/Physics generally transfer everywhere
             const generalAndMath = [
                 "Academic Techniques", "Calculus I", "Calculus II", "Calculus III", 
                 "English Language Course C1-1", "English Language Course C1-2", 
@@ -174,25 +175,30 @@
                 "Basics of Physics I (including Lab)", "Basics of Physics II",
                 "Principles of Numerical Methods"
             ];
-            
-            if (generalAndMath.includes(courseName)) {
-                return courseName + " (Transfer)";
-            }
 
+            // For Computer Engineering, return exactly the course name for everything
             if (program === "Computer Engineering") {
                 return courseName; 
             } 
-            else if (program === "Civil Engineering") {
+            
+            // For other programs, check if it's a general/math course first
+            if (generalAndMath.includes(courseName)) {
+                return courseName; // Removed the (Transfer) text so it looks clean!
+            }
+
+            if (program === "Civil Engineering") {
+                // Only very basic computing and management transfers to Civil
                 if (courseName === "Introduction to Programming") return "Computing for Engineers";
                 if (courseName === "IT Project Management") return "Engineering Project Management";
                 return "N/A";
             } 
             else if (program === "Electrical and Electronics Engineering") {
+                // Hardware, management, and basic programming transfer
                 const eeTransfers = [
                     "Introduction to Programming", "Computer Organization", 
                     "Computer and Data Networks", "Drones", "Introduction to Operating Systems"
                 ];
-                if (eeTransfers.includes(courseName)) return courseName + " (EE)";
+                if (eeTransfers.includes(courseName)) return courseName + " (EE)"; // Kept as requested
                 if (courseName === "IT Project Management") return "Engineering Management";
                 return "N/A";
             }
